@@ -17,5 +17,6 @@ Today I Learned (TIL)
 > [유니티에서 .NET 4.x 사용](https://docs.microsoft.com/ko-kr/visualstudio/gamedev/unity/unity-scripting-upgrade)
 
 > 유니티 LTS (Long Term service)를 지원하는 Unity 2020.3 버전 기준으로 C# 8.0 지원함.  
+> ![Unity Support Csharp 8 0](https://user-images.githubusercontent.com/67315288/117679459-418b2100-b1eb-11eb-8e29-1554deb855cc.png)  
 > [C# 8.0 기능](https://docs.microsoft.com/ko-kr/dotnet/csharp/whats-new/csharp-8#switch-expressions)  
 > [Unity 2020 LTS 기능](https://docs.unity3d.com/kr/2020.3/Manual/WhatsNew2020LTS.html#Programmer)
