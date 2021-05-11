@@ -2,8 +2,10 @@
 
 ## 코루틴에 대해서
 
-유니티에서 제공하는 코루틴은 하나의 프로세스를 여러 루틴들이 시간을 나눠서 사용하는 방식으로 스레드와는 다르다.
-스레드는 동시에 여러 프로세스가 여러 작업을 병렬적으로 진행하는것. 코루틴은 직렬처리이며 병렬처리처럼 보이게끔 해주는 함수이다. 유니티는 병렬적으로 함수들을 동시에 여러가지 실행하지 못한다. 한번에 함수를 하나하나 실행시킨다.
+유니티에서 제공하는 코루틴은 하나의 프로세스를 여러 루틴들이 시간을 나눠서 사용하는 방식으로 스레드와는 다르다.  
+스레드는 동시에 여러 프로세스가 여러 작업을 병렬적으로 진행하는것.  
+코루틴은 직렬처리이며 병렬처리처럼 보이게끔 해주는 함수이다.  
+유니티는 병렬적으로 함수들을 동시에 여러가지 실행하지 못한다. 한번에 함수를 하나하나 실행시킨다.
 
 > 코루틴 예시
 
@@ -31,8 +33,10 @@ IEnumerator SomeCoroutine()
 3. yield return null에서 1프레임 대기. "End Coroutine!" 메세지 출력
 4. 코루틴 종료.
 
-코루틴의 응용법은 많은데 주로 지연처리를 하거나 비동기적 로직을 처리 해야 할 때 이용한다.  
-하지만 StartCourtine이 무엇이고, IEnumerator가 무엇이길래 이런 동작이 가능한것일까? 우선 IEnumerator 내부 구조를 먼저 보도록 하자.
+코루틴의 응용법은 많은데 주로 지연처리를 하거나 비동기적 로직을 처리 해야 할 때 이용한다.
+
+하지만 StartCourtine이 무엇이고, IEnumerator가 무엇이길래 이런 동작이 가능한것일까?  
+우선 IEnumerator 내부 구조를 먼저 보도록 하자.
 
 <br/>
 <br/>
@@ -56,12 +60,12 @@ public interface IEnumerable
 
 ```
 
-IEnumerator 와 IEnumerable의 본래 용도는 두 인터페이스를 상속 받아 열거형의 상태를 보관하는 클래스를 구현하여, 해당값을 반복하여 가져오거나 무한한 양의 데이터를 필요할때만 가져와서 처리해야 할 때 ( ex) 피보나치 수열, 소수(Prime Number)등) 주로 foreach나 LINQ와 함께 사용된다.
+IEnumerator 와 IEnumerable의 본래 용도는 두 인터페이스를 상속 받아 열거형의 상태를 보관하는 클래스를 구현하여, 해당값을 반복하여 가져오거나 무한한 양의 데이터를 필요할때만 가져와서 처리해야 할 때 ex) 피보나치 수열, 소수(Prime Number)등 주로 foreach나 LINQ와 함께 사용된다.
 
 <br/>
 <br/>
 
-> 아래는 실제로 IEnumerable, IEnumerator (IEnumerable\<T>,IEnumerator\<T>) 상속받은 Generic Collection인 List\<int>를 사용하여 foreach문의 동작을 관찰해본 결과이다.
+> 아래는 실제로 IEnumerable, IEnumerator (IEnumerable\<T>,IEnumerator\<T>) 상속받은 Generic Collection인 List\<int>를 사용하여 foreach문의 동작을 관찰해본 IL 소스코드 결과이다.
 
 ```IL
 IL_0009: callvirt instance valuetype [System.Private.CoreLib]System.Collections.Generic.List`1/Enumerator<!0> class [System.Private.CoreLib]System.Collections.Generic.List`1<int32>::GetEnumerator()
@@ -243,12 +247,12 @@ yield return 에서도 컴파일러가 IEnumerator 객체를 생성하기 때문
 
 > [유니티에서 제공하는 YieldInstruction 객체](https://github.com/twozeronine/Unity_Study/blob/main/Coroutine/yield%20return.cs) 내부 소스코드
 
-yield return null : 다음 프레임까지 대기
-yield return new WaitUntil(Func\<bool> predicate) 익명함수의 조건식이 true가 될때까지 대기
-yield return new WaitWhile(Func\<bool> predicate) 익명함수의 조건식이 false가 될때까지 대기
-yield return new WaitForSeconds(float) : 지정된 초(float) 만큼 대기
-yield return new WaitForFixedUpdate() : 다음 물리 프레임까지 대기
-yield return new WaitForEndOfFrame() : 모든 렌더링 작업이 끝날 때 까지 대기
-yield return StartCoroutine(string) : 해당 코루틴이 끝날 때 까지 대기
-yield return new WWW(string) : 웹 통신 작업이 끝날 때까지 대기
+yield return null : 다음 프레임까지 대기  
+yield return new WaitUntil(Func\<bool> predicate) 익명함수의 조건식이 true가 될때까지 대기  
+yield return new WaitWhile(Func\<bool> predicate) 익명함수의 조건식이 false가 될때까지 대기  
+yield return new WaitForSeconds(float) : 지정된 초(float) 만큼 대기  
+yield return new WaitForFixedUpdate() : 다음 물리 프레임까지 대기  
+yield return new WaitForEndOfFrame() : 모든 렌더링 작업이 끝날 때 까지 대기  
+yield return StartCoroutine(string) : 해당 코루틴이 끝날 때 까지 대기  
+yield return new WWW(string) : 웹 통신 작업이 끝날 때까지 대기  
 yield return new AsyncOperation : 비동기 작업이 끝날 때 까지 대기
