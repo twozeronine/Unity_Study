@@ -11,23 +11,12 @@ namespace TextRPG2
     Mage
   }
 
-  class Player
+  class Player : Creature
   {
     protected PlayerType _type = PlayerType.None;
-    protected int hp = 0;
-    protected int attack = 0;
+    protected Player(PlayerType type) : base(CreatureType.Player) => _type = type;
 
-    protected Player(PlayerType type) => _type = type;
-
-    public void SetInfo(int hp, int attack)
-    {
-      this.hp = hp;
-      this.attack = attack;
-    }
-
-    public int GetHp() => hp;
-    public int GetAttack() => attack;
-
+    public PlayerType GetPlayerType() => _type;
   }
 
   class Knight : Player
