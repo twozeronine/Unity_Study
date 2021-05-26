@@ -6,16 +6,12 @@ namespace TextRPG2
   {
     static void Main(string[] args)
     {
-      Player player = new Knight();
-      Player player2 = new Archer();
-      Monster monster = new Orc();
+      Game game = new Game();
 
-      int damage = player.GetAttack();
-      Console.WriteLine(monster.GetHp());
-      monster.OnDamaged(damage);
-      Console.WriteLine(monster.GetHp());
-      player2.OnDamaged(player);
-
+      while (true)
+      {
+        game.Process();
+      }
     }
   }
 }
