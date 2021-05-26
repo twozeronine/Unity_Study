@@ -36,7 +36,7 @@ namespace Algorithm
             Console.Write(CIRCLE);
 
           }
-          Console.WriteLine("");
+          Console.WriteLine();
         }
       }
     }
