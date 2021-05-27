@@ -118,6 +118,7 @@ namespace Algorithm
     const char CIRCLE = '\u25cf';
     public TileType[,] _tile;// 배열
     public int _size;
+    Random rand = new Random();
 
     public enum TileType
     {
@@ -133,10 +134,12 @@ namespace Algorithm
 
       // Mazes for Programmers
 
-      GenerateByBinaryTree();
+      GenerateMap();
+      // GenerateByBinaryTree();
+      // GenerateBySideWinder();
     }
 
-    private void GenerateByBinaryTree()
+    private void GenerateMap()
     {
       // 일단 길을 다 막아버리는 작업
       for (int y = 0; y < _size; y++)
@@ -149,10 +152,12 @@ namespace Algorithm
             _tile[y, x] = TileType.Empty;
         }
       }
+    }
 
+    private void GenerateByBinaryTree()
+    {
       // 랜덤으로 우측 혹은 아래로 길을 뚫는 작업
       // Binary Tree Algorithm
-      Random rand = new Random();
       for (int y = 0; y < _size; y++)
       {
         for (int x = 0; x < _size; x++)
@@ -181,6 +186,49 @@ namespace Algorithm
           }
           else
             _tile[y + 1, x] = TileType.Empty;
+        }
+      }
+    }
+
+
+    private void GenerateBySideWinder()
+    {
+      // 랜덤으로 우측 혹은 아래로 길을 뚫는 작업
+      // Side Winder Algorithm
+
+      for (int y = 0; y < _size; y++)
+      {
+        int count = 1;
+        for (int x = 0; x < _size; x++)
+        {
+          if (x % 2 == 0 || y % 2 == 0)
+            continue;
+
+          if (y == _size - 2 && x == _size - 2)
+            continue;
+
+          if (y == _size - 2)
+          {
+            _tile[y, x + 1] = TileType.Empty;
+            continue;
+          }
+
+          if (x == _size - 2)
+          {
+            _tile[y + 1, x] = TileType.Empty;
+            continue;
+          }
+          if (rand.Next(0, 2) == 0)
+          {
+            _tile[y, x + 1] = TileType.Empty;
+            count++;
+          }
+          else
+          {
+            int randomIndex = rand.Next(0, count);
+            _tile[y + 1, x - randomIndex * 2] = TileType.Empty;
+            count = 1;
+          }
         }
       }
     }
