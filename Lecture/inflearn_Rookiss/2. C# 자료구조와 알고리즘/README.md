@@ -42,3 +42,9 @@ SideWinderAlgorithm을 통한 미로 만들기이다.
 ![Animation1](https://user-images.githubusercontent.com/67315288/119799582-291f4400-bf17-11eb-8467-1703676e16e9.gif)
 
 미로찾기 알고리즘 중 하나인 우선법을 사용해 미로를 찾는다.
+
+## 그래프
+
+![그래프](https://user-images.githubusercontent.com/67315288/119821139-2fb8b600-bf2d-11eb-8925-484119ebe0ce.png)
+
+길 찾기 알고리즘을 구현하기 위한 자료구조인 그래프
