@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace PriorityQueue
 {
-  class PriorityQueue
+  class PriorityQueue<T> where T : IComparable<T>
   {
-    List<int> _heap = new List<int>();
+    List<T> _heap = new List<T>();
 
 
     // O(log2(N))
-    public void Push(int data)
+    public void Push(T data)
     {
       // 힙의 맨 끝에 새로운 데이터를 삽입한다
       _heap.Add(data);
@@ -20,12 +20,12 @@ namespace PriorityQueue
       {
         // 도장깨기를 시도
         int next = (now - 1) / 2;
-        if (_heap[now] < _heap[next])
+        if (_heap[now].CompareTo(_heap[next]) < 0)
           break; // 현재 값이 부모값보다 작으면 실패
 
         // 현재 값이 부모값보다 크다면
         // 두 값을 교체한다
-        int temp = _heap[now];
+        T temp = _heap[now];
         _heap[now] = _heap[next];
         _heap[next] = temp;
 
@@ -35,10 +35,10 @@ namespace PriorityQueue
 
     }
 
-    public int Pop()
+    public T Pop()
     {
       // 반환할 데이터를 따로 저장
-      int ret = _heap[0];
+      T ret = _heap[0];
 
       // 마지막 데이터를 루트로 이동한다
       int lastIndex = _heap.Count - 1;
@@ -55,10 +55,10 @@ namespace PriorityQueue
 
         int next = now;
         // 왼쪽값이 현재값보다 크면, 왼쪽으로 이동 
-        if (left <= lastIndex && _heap[next] < _heap[left])
+        if (left <= lastIndex && _heap[next].CompareTo(_heap[left]) < 0)
           next = left;
         // 오른쪽값이 현재값(왼쪽 이동 포함)보다 크면, 오른쪽으로 이동
-        if (right <= lastIndex && _heap[next] < _heap[right])
+        if (right <= lastIndex && _heap[next].CompareTo(_heap[right]) < 0)
           next = right;
 
         // 왼쪽/오른쪽 모두 현재값보다 작으면 종료
@@ -67,7 +67,7 @@ namespace PriorityQueue
 
 
         // 두 값을 교체한다
-        int temp = _heap[now];
+        T temp = _heap[now];
         _heap[now] = _heap[next];
         _heap[next] = temp;
         //검사 위치를 이동한다
@@ -83,20 +83,32 @@ namespace PriorityQueue
       return _heap.Count;
     }
   }
+  class Knight : IComparable<Knight>
+  {
+    public int id { get; set; }
+
+    public int CompareTo(Knight other)
+    {
+      if (id == other.id) return 0;
+      return id > other.id ? 1 : -1;
+    }
+  }
+
   class Program
   {
     static void Main(string[] args)
     {
-      PriorityQueue q = new PriorityQueue();
-      q.Push(20);
-      q.Push(10);
-      q.Push(30);
-      q.Push(90);
-      q.Push(40);
+      PriorityQueue<Knight> q = new PriorityQueue<Knight>();
+      q.Push(new Knight() { id = 20 });
+      q.Push(new Knight() { id = 30 });
+      q.Push(new Knight() { id = 40 });
+      q.Push(new Knight() { id = 10 });
+      q.Push(new Knight() { id = 05 });
+      q.Push(new Knight() { id = 35 });
 
       while (q.Count() > 0)
       {
-        Console.WriteLine(q.Pop());
+        Console.WriteLine(q.Pop().id);
       }
     }
   }
