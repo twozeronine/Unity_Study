@@ -119,6 +119,7 @@ namespace Algorithm
     public TileType[,] Tile { get; private set; }// 배열
     public int Size { get; private set; }
 
+    // 목적지
     public int DestY { get; private set; }
     public int DestX { get; private set; }
 
