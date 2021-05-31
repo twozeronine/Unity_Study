@@ -91,3 +91,7 @@ Quaternion.LookRotation() 함수를 통해 우리가 원하는 방향을 바라 
 하지만 좀 더 부드러운 회전 값을 얻기 위해 보간법을 사용해야 한다.  
 Quaternion.Slerp( Vector3 a, Vector3 b , float t) 함수를 사용하면 좀 더 부드러운 회전 각을 얻을 수 있다.
 보간법은 lerp와 slerp가 있는데 애니메이션의 형태에 따라서 보간 방법을 고르는 편이 좋다.
+
+### InputManager.cs
+
+디자인 패턴인 옵저버 패턴을 이용해서만든 InputManager 사용자의 입력이 들어오면 KeyAction에 등록된 함수를 실행시킨다.
