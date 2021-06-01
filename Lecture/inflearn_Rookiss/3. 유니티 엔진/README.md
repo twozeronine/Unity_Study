@@ -38,3 +38,7 @@ Ctrl + Shift + C : 콘솔창 ( 디버깅시 로그로 출력한 내용이 여기
 ## [Physics](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/Physics)
 
 게임에서 물리는 없어선 안될 가장 중요한 요소이다. 보통은 물리 기능을 구현하기 위해서 엄청나게 큰 수학적 지식과 노력을 필요하지만 유니티에서는 물리 연산을 하기위해 몇 가지 기능들을 제공한다.
+
+## [Camera](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/Camera)
+
+유니티 카메라 기능.
