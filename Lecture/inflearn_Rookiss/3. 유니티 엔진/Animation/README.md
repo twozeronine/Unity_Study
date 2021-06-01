@@ -154,3 +154,20 @@ isJumping && isAttacking  // 가능
 _state == PlayerState.Jump && _state == PlayerState.Attack  // 불가능
 
 ```
+
+## State Machine
+
+State 패턴과 관련이 깊다. 어떤 상태이냐 따라 재생시킬 애니메이션이 다르다. State Machine 에서 하나의 State는 하나의 Animation 클립에 대응한다.
+
+### Has Exit Time
+
+애니메이션 재생 종류 후 다음 전이로 이동한다. ( Condition 조건에 따라 전이 되는게 아님 )
+
+- 체크 -> 종료 시점이 존재하게 되는 것.
+  -- Settings 의 Fixed Duration이 체크되어 있다면 Exit Time 값이 “시간”으로 해석된다. Exit Time 값이 0.7 이고 Has Exit TIme이 체크되어 있다면 절대적인 “0.7초”의 시간 후에 다음 전이가 일어난다.
+  -- Settings 의 Fixed Duration이 체크되어 있지 않다면 Exit Time 값이 “% 비율”로 해석된다. Exit Time 값이 0.7 이고 Has Exit TIme이 체크되어 있다면 “해당 애니메이션의 전체 재생 길이의 70 %”까지만 재생한 후에 다음 전이가 일어난다.
+- 체크 해제 -> 애니메이션이 다 재생 되더라도 전이가 일어나지 않는다.
+  -- 전이가 일어나려면 Contidion 조건을 만족해야 한다.
+  -- 따라서 파라미터 값으로 Condition 조건을 통해 전이가 즉각 일어나게 하려면 Has Exit Time 을 체크 해제해주어야 한다.
+
+어떠한 파라미터 값을 넣고 그 값의 상태에 따라 애니메이션을 전환하고 싶다면 Has Exit Time 체크를 해제 해야된다고 이해하자.
