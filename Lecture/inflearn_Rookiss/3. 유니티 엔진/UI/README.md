@@ -32,3 +32,15 @@ Rect Transform은 부모 UI의 크기가 변할 때의 그 자식 UI 의 크기�
 ![유형3](https://user-images.githubusercontent.com/67315288/120322673-a2f06c80-c31f-11eb-831f-3e7a20060b01.png)
 
 이 경우에는 비율을 유지한채로 변경되므로 부모 UI 크기 변동이 많고 잦다면 제일 좋은 방법이다.
+
+## UI 관리
+
+### UI 입력 이벤트만 처리
+
+롤이나 디아블로 탑뷰 RPG 게임 같은 경우에서 지면을 클릭하는것과 UI를 클릭하는것은 구분이 가야한다. 해당 구현은 마우스 입력을 받는 코드에서 UI를 클릭 할때는 마우스 입력을 받지 않도록 하게 구현해야한다.
+
+```C#
+// UI가 클릭된 상황이라면  return
+    if (EventSystem.current.IsPointerOverGameObject())
+      return;
+```
