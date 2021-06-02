@@ -50,3 +50,31 @@ Rect Transform은 부모 UI의 크기가 변할 때의 그 자식 UI 의 크기�
 게임에서 UI는 수백개에 이를 정도로 많아지는데 이를 관리하기 위해서는 구조적으로 잘 짜임새있게 짜야한다. 만약 유니티 툴을 이용하여 드래그 & 드롭 형식으로 UI를 이곳저곳 매핑 하다보면 어느 순간 스파게티 코드처럼 꼬여버릴 위험이 있기 때문에 이를 관리하기 위해 바인딩 자동화를 한다.
 
 UI_Base.cs : 모든 UI의 조상, 모든 UI 캔버스들이 가지고 있는 공통적인 부분들.
+
+### UI 이벤트 처리
+
+UI로 인벤토리나 여러가지 기능들을 구현할 때 이벤트가 발생되는데 여러가지 UI 이벤트들을 UI마다 하나하나 개별로 처리를 한다면 복잡도가 높혀지기 때문에 처리하기 쉽게끔 코드를 구조적으로 만들어야 한다.
+
+UI_EventHandler.cs : 옵저버 패턴을 이용하여 해당 컴포넌트를 갖고있는 오브젝트에서 이벤트 발생 시 구독된 메소드들을 동작하게 한다.
+
+```C#
+
+// Unity에서 제공하는 Interface인 IDragHandler, IPointClickHandler를 상속받고 기능을 구현하면 드래그와 클릭을 할 수 있게된다.
+public class UI_EventHandler : MonoBehaviour, IDragHandler, IPointerClickHandler
+{
+  public Action<PointerEventData> OnClickHandler = null;
+  public Action<PointerEventData> OnDragHandler = null;
+
+  public void OnPointerClick(PointerEventData eventData)
+  {
+    if (OnClickHandler != null)
+      OnClickHandler.Invoke(eventData);
+  }
+  public void OnDrag(PointerEventData eventData)
+  {
+    if (OnDragHandler != null)
+      OnDragHandler.Invoke(eventData);
+  }
+}
+
+```

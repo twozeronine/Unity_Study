@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 //UI_Base를 상속받은 UI_Button
-public class UI_Button : UI_Base
+public class UI_Button : UI_Popup
 {
 
   enum Buttons
