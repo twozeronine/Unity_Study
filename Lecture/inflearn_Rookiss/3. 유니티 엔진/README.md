@@ -54,3 +54,7 @@ Ctrl + Shift + C : 콘솔창 ( 디버깅시 로그로 출력한 내용이 여기
 ## [Scene](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/UI)
 
 게임에서 로비, 게임화면 등등 구현할때 씬을 나누는데 씬을 관리하는 방법에 대해서 알아보자.
+
+## [Sound](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/UI)
+
+게임에서 없으면 안될 중요한 사운드 어떻게 다루는지에 대해서 알아보자.
