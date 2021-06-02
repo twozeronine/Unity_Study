@@ -78,3 +78,7 @@ public class UI_EventHandler : MonoBehaviour, IDragHandler, IPointerClickHandler
 }
 
 ```
+
+### Popup UI sortingOrder 자동구현
+
+실제 게임에서 팝업 UI창들이 뜰 때 가장 나중에 생성된 UI창이 가장 위에 있게끔 하여야 되는데 그 구현을 자동으로 관리하게끔 코드로 관리할 수 있다.
