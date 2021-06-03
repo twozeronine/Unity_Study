@@ -78,3 +78,7 @@ Ctrl + Shift + C : 콘솔창 ( 디버깅시 로그로 출력한 내용이 여기
 유니티에서는 길찾기를 구현하기 위해 NavMesh라는 기능을 제공한다. NavMesh란 말 그대로 걸을 수 있는 Mesh라는 뜻으로 게임상에서 만들어진 맵에서 NavMesh를 Bake하여 NavMeshAgent 컴포넌트를 가진 오브젝트가 그 위를 걷게 할 수 있다.
 
 > [Unity_Technologies](https://github.com/Unity-Technologies/NavMeshComponents)에서 제공하는 NavMeshComponents를 이용하면 동적으로 Bake도 할 수 있다.
+
+## [Contents](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/Contents)
+
+위의 게임에 쓰일 기본 프레임워크를 모두 구현 하였으니 실제로 미니 RPG 컨텐츠를 구현 해보도록 하자.
