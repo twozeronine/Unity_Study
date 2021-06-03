@@ -58,3 +58,7 @@ Ctrl + Shift + C : 콘솔창 ( 디버깅시 로그로 출력한 내용이 여기
 ## [Sound](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/UI)
 
 게임에서 없으면 안될 중요한 사운드 어떻게 다루는지에 대해서 알아보자.
+
+## [Pooling](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/Pooling)
+
+유니티에서 게임 오브젝트의 삭제와 생성은 부하가 큰 작업이다. 따라서 미리 캐싱해두고 오브젝트가 필요할 시 활성화 하여 사용하고 사용이 끝나면 비활성화 시켜 풀에 다시 넣는 방법이 필요하다.
