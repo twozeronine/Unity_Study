@@ -69,6 +69,12 @@ Ctrl + Shift + C : 콘솔창 ( 디버깅시 로그로 출력한 내용이 여기
 
 > [링크](https://github.com/twozeronine/Unity_Study/tree/main/Coroutine) 예전에 공부 하였을때 이미 한번 내용을 정리했었다.
 
-## Data
+## [Data](https://github.com/twozeronine/Unity_Study/tree/main/Lecture/inflearn_Rookiss/3.%20%EC%9C%A0%EB%8B%88%ED%8B%B0%20%EC%97%94%EC%A7%84/Data)
 
 프로젝트의 규모가 커질수록 하드코딩으로 데이터를 입력 하는것보다 어느 한 곳에서 데이터를 저장하여 불러오는 식으로 해야한다.
+
+## NavMesh
+
+유니티에서는 길찾기를 구현하기 위해 NavMesh라는 기능을 제공한다. NavMesh란 말 그대로 걸을 수 있는 Mesh라는 뜻으로 게임상에서 만들어진 맵에서 NavMesh를 Bake하여 NavMeshAgent 컴포넌트를 가진 오브젝트가 그 위를 걷게 할 수 있다.
+
+> [Unity_Technologies](https://github.com/Unity-Technologies/NavMeshComponents)에서 제공하는 NavMeshComponents를 이용하면 동적으로 Bake도 할 수 있다.
