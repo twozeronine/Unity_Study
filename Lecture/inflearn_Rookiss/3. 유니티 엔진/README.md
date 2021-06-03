@@ -68,3 +68,7 @@ Ctrl + Shift + C : 콘솔창 ( 디버깅시 로그로 출력한 내용이 여기
 코루틴은 유니티에서 제공하는 기능이 아닌 C#에 이미 있는 IEnumerator 인터페이스 열거형에서 yield return의 호출시에 메인 루틴으로 갔다가 다시 서브 루틴으로 돌아가는 특성을 이용한 기능이다 ( 심지어 비동기 방식으로 작동 하는것도 아니다. [참고 사이트](https://unityindepth.tistory.com/21) )
 
 > [링크](https://github.com/twozeronine/Unity_Study/tree/main/Coroutine) 예전에 공부 하였을때 이미 한번 내용을 정리했었다.
+
+## Data
+
+프로젝트의 규모가 커질수록 하드코딩으로 데이터를 입력 하는것보다 어느 한 곳에서 데이터를 저장하여 불러오는 식으로 해야한다.
