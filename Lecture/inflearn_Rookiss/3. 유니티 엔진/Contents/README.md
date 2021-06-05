@@ -72,3 +72,7 @@ public class PlayerStat : Stat
 Player의 스탯은 Stat을 상속받아서 넣었다.
 
 참고로 유니티에서 protected와 private에 대한 SerializeField attribute를 지원하지만 프로퍼티는 지원을 안하므로 프로퍼티를 따로 구현을 해주어야한다.
+
+## MouseCursor
+
+RPG게임에서 MouseCursor모양은 자주 바뀐다. 롤이나 디아블로와 같은 마우스로 이동하는 게임에서 커서의 모양은 현재 하는 행동의 정보 혹은 현재 타겟팅하고 있는 오브젝트등 정보를 제공하는 역할을 하기도 하는데 마우스 커서의 모양이 바뀌도록 구현해보자.
