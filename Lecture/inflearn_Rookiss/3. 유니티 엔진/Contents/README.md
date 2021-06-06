@@ -76,3 +76,24 @@ Player의 스탯은 Stat을 상속받아서 넣었다.
 ## MouseCursor
 
 RPG게임에서 MouseCursor모양은 자주 바뀐다. 롤이나 디아블로와 같은 마우스로 이동하는 게임에서 커서의 모양은 현재 하는 행동의 정보 혹은 현재 타겟팅하고 있는 오브젝트등 정보를 제공하는 역할을 하기도 하는데 마우스 커서의 모양이 바뀌도록 구현해보자.
+
+## HP Bar
+
+체력바도 하나의 UI이다. 하지만 게임안에서 오브젝트와 같이 3D로 있기 위해서는 UI 캔버스 렌더러 모드를 World Space로 바꿔주어야 한다.
+
+그리고 체력바를 오브젝트의 자식으로 넣어주게 되면 되는데 하지만 부모오브젝트가 회전시 같이 회전하는 문제가 있으므로 이를 수정하려면 빌보드를 사용해야한다.
+
+> 빌보드란 카메라가 바라보는 방향으로 동일하게 UI이가 카메라를 바라보도록 회전하는 개념이다. 즉 부모 오브젝트의 회전값을 따라가는게 아니고, 카메라를 고정적으로 바라보도록 회전 시키는것이다.
+
+```C#
+
+  void Update()
+  {
+    Transform parent = transform.parent;
+    // 부모 오브젝트의 콜라이더.Y 크기 보다 1만큼 더한 위치에 HpBar를 위치시킴.
+    // 이로써 어떤 오브젝트가 와도 콜라이더의 크기에 따라 자연스럽게 HPBar 위치가 잡히게된다.
+    transform.position = parent.position + Vector3.up * (parent.GetComponent<Collider>().bounds.size.y);
+    transform.rotation = Camera.main.transform.rotation;
+  }
+
+```
