@@ -286,3 +286,25 @@ public class MonsterController : BaseController
 }
 
 ```
+
+## Destroy
+
+유니티에서 오브젝트 Destroy 처리에 관하여
+
+유니티에서 Destroy로 오브젝트를 제거하면 신기하게도 오브젝트를 참조 하고있는 모든 참조값에 댕글링 포인터 값이 되는게 아닌 "null"이라고 fakenull이 들어가게 된다. 실제로도 유니티에서는 오브젝트를 삭제하면 실제로 메모리에서 해제가 되지않고 유니티 엔진이 여전히 참조 값을 들고있고 fakenull을 반환 하는것이다.
+
+> 그렇기 때문에 삭제된것 같아 보이는 오브젝트라도 컴포넌트는 여전히 접근할 수 있기 때문에 코드를 설계할 때 런타임중 Destroy 될 어떠한 gameobject의 컴포넌트를 참조하지 않도록 gameobject가 해체되면 그 오브젝트의 컴포넌트도 접근할 수 없게끔 설계 해야한다.
+
+그리고 유니티 내부 C++코드에서 gameobject를 null과 비교를 하게끔 operator를 구현해서 비교를 할 수 있게끔 구현을 해둔것이다.
+
+그래서 실제로 gameobject가 유효한지 아닌지 검사를 할 수 있는것이다.
+
+```C#
+public class Object
+  {
+    public static bool operator ==(Object x, Object y);
+    public static bool operator !=(Object x, Object y);
+
+    public static implicit operator bool(Object exists);
+  }
+```
