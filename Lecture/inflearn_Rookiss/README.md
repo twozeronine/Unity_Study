@@ -11,7 +11,7 @@
 
 - Part1 : C# 프로그래밍 입문 // [수료완료](https://www.inflearn.com/certificate/458814-324718-2417306)
 - Part2 : 자료구조와 알고리즘 // [수료완료](https://www.inflearn.com/certificate/458814-324727-2417305)
-- Part3 : 유니티 엔진
+- Part3 : 유니티 엔진 // [수료완료](https://www.inflearn.com/certificate/458814-324817-2417313)
 - Part4 : 게임 서버 ( 네트워크, 멀티쓰레드, OS)
 - Part5 : 데이터베이스 ( SQL Server)
 - Part6 : 웹서버 ( ASP.NET Core Blazor, WebAPi)
