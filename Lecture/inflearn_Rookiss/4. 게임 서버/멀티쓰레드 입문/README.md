@@ -163,3 +163,106 @@ class Program
 캐시는 이렇듯 연산처리를 빠르게 해줄수있게 해준다.  
 하지만 멀티 쓰레드 환경에서는 캐시가 꽉 찼을 때 프로세서가 새 데이터가 들어갈 자리를 마련하기 위해 캐시에서 데이터를 제거하게 되는데 제거할 데이터를 고를 때 최근에 사용되지 않은 데이터를 고른다.  
 이렇게 하면 대게 이전 타임 슬라이스의 데이터가 선택되는데, 서로 상대방의 데이터를 제거하기 때문에 성능이 오히려 저하된다.
+
+## 메모리 배리어
+
+이전에 컴파일러의 최적화에 대해서 설명했는데 최적화는 컴파일러 뿐 아니라 하드웨어적으로도 일어나게 된다.
+
+현대 CPU는 성능을 좋기 하기 위해 최적화를 거쳐 순서를 바꿔서 실행시킬 수 있는데 이 또한 멀티 쓰레드 환경을 고려하지 않은 최적화 일 경우 문제가 발생한다.
+
+```C#
+  class Program
+    {
+        static int x = 0;
+        static int y = 0;
+        static int r1 = 0;
+        static int r2 = 0;
+
+        static void Thread_1()
+        {
+            y = 1; // Store y
+
+            r1 = x; // Load x
+        }
+
+        static void Thread_2()
+        {
+            x = 1; // Store x
+
+            r2 = y; // Load y
+        }
+
+        static void Main(string[] args)
+        {
+            int count = 0;
+            while(true)
+            {
+                count++;
+                x = y = r1 = r2 = 0;
+
+                Task t1 = new Task(Thread_1);
+                Task t2 = new Task(Thread_2);
+                t1.Start();
+                t2.Start();
+
+                Task.WaitAll(t1, t2);
+
+                if (r1 == 0 && r2 == 0)
+                    break;
+            }
+
+            Console.WriteLine($"{count}번만에 빠져나옴!");
+        }
+    }
+```
+
+위의 코드는 로직대로라면 절대로 while문을 빠져나오지 못해야 하지만 실행하면 while을 탈출하게된다.
+
+---
+
+![하드웨어 최적화](https://user-images.githubusercontent.com/67315288/126038981-c29f5388-c4be-4b03-bd40-55b218a0d27f.png)
+
+하지만 이렇게 while을 탈출하게 되는데 그 이유는 바로 하드웨어 최적화 때문이다.
+
+```C#
+//서로 독립된 변수에 값을 할당 하기 때문에 하드웨어는 이 코드의 순서를 바꿔도 문제가 없다고 생각하여 코드의 순서를 바꿔 실행하게 된다.
+//이와같이 순서를 바꾸면서 r1 과 r2가 0이 되는 조건을 만족하는 시점이 생기는것이다.
+        static void Thread_1()
+        {
+            r1 = x; // Load x
+
+            y = 1; // Store y
+
+        }
+
+        static void Thread_2()
+        {
+            r2 = y; // Load y
+
+            x = 1; // Store x
+        }
+
+///////
+// 이와같이 메모리 배리어로 막으면된다.
+///////
+                static void Thread_1()
+        {
+            y = 1; // Store y
+
+            //------------------------------------
+            Thread.MemoryBarrier();
+
+            r1 = x; // Load x
+        }
+
+        static void Thread_2()
+        {
+            x = 1; // Store x
+
+            //------------------------------------
+            Thread.MemoryBarrier();
+
+            r2 = y; // Load y
+        }
+
+```
