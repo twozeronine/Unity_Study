@@ -467,7 +467,8 @@ static void Thread_1()
 
 ```
 
-데드락의 몇가지의 해결방법이 있다.
+lock에는 몇 가지 구현 방법이 존재한다.  
+구현 방법에 대해 알아보자
 
 ### 1. SpinLock
 
@@ -542,6 +543,57 @@ static void Thread_1()
     }
 ```
 
-interlock.CompareExchange 함수를 사용해 비교를 하고 값을 변경한다
+기본 동작은 lock이 걸려있으면 계속해서 접근하여 lock이 풀린지 확인하고 lock이 풀리는 순간 공유 자원에 접근한 다음 락을 거는 형식이다.
+
+단점은 계속해서 lock을 확인하기 때문에 CPU 점유율이 높아져 부하가 걸린다는 점이 있다. 그래서 설계시 lock이 금방 풀릴 것 같은 상황에서 사용하는것이 바람직하다.
+
+데드락 방지로 interlock.CompareExchange 함수를 사용해 비교를 하고 값을 변경한다
 
 CPU 차원에서 메모리 락을 걸어 한 쓰레드만 접근해서 메모리 조작을 할 수 있게 막아버리기 때문에 데드락 현상이 발생하지 않게 된다.
+
+### 2. Context Swiching
+
+```C#
+    class SpinLock
+    {
+         volatile int _locked = 0;
+
+        public void Acquire()
+        {
+            while (true)
+            {
+                // version 1
+                //int original = Interlocked.Exchange(ref _locked, 1);
+                //if (original == 0)
+                //    break;
+
+                // version 2
+                // CAS Compare-And-Swap
+                int expected = 0;
+                int desired = 1;
+                if(Interlocked.CompareExchange(ref _locked, desired, expected)==expected)
+                    break;
+
+                //Thread.Sleep(1); // 무조건 휴식 => 무조건 1ms 정도 쉰다.
+                //Thread.Sleep(0); // 조건부 양보 => 나보다 우선순위가 낮은 애들한테는 양보 불가. => 우선순위가 나보다 같거나 높은 쓰레드가 없으면 다시 본인한테
+                Thread.Yield();  // 관대한 양보 => 지금 실행이 가능한 쓰레드가 있으면 실행한다 => 실행 가능한 애가 없으면 남은 시간 소진
+            }
+        }
+
+        public void Release()
+        {
+            _locked = 0;
+        }
+    }
+
+
+```
+
+기본 동작은 기존 스핀락에서 대기하는 부분만 추가되었다.
+
+Context swiching은 lock이 걸려있으면 일단 대기 후 ( 다른 쓰레드에게 양보 ) 일정 시간후에 다시 접근하여 lock이 풀려있으면 실행을 하게된다.
+
+단점은 lock이 걸려있을때 일정 시간 대기 후 다시 돌아와 접근해도 lock이 풀려있다는 보장이 없기 때문에 기아 현상이 발생 할 수 도 있다.  
+그리고 대기를 하기위해 Context Switching 한다는 것 자체가 현재의 Task를 저장하고 다음 진행할 Task의 상태 값을 읽어 적용하는 과정인데 결국 이러한 과정이 계속 발생하면 부하가 크다.
+
+경우에 따라서는 운영 체제의 유저 모드에서 머무르며 계속해서 접근하는 스핀락 기법이 더 도움된다.
