@@ -266,3 +266,113 @@ class Program
         }
 
 ```
+
+## Interlocked
+
+멀티쓰레드를 사용하면 겪게 될 문제 중 하나로 Race Condition이 있다.
+
+### 경합 조건 ( Race condition )
+
+[Race Condition](https://en.wikipedia.org/wiki/Race_condition)은 공유 자원에 대해 여러 개의 쓰레드가 동시에 접근을 시도할 때 접근의 타이밍이나 순서 등이 결과 값에 영향을 줄 수 있는 상태를 말한다.
+
+```C#
+
+class Program
+    {
+        static int number = 0;
+
+        static void Thread_1()
+        {
+
+            for (int i = 0; i < 100000; i++)
+            {
+                 number++;
+            }
+        }
+        static void Thread_2()
+        {
+            for (int i = 0; i < 100000; i++)
+            {
+                number--;
+            }
+        }
+        static void Main(string[] args)
+        {
+            Task t1 = new Task(Thread_1);
+            Task t2 = new Task(Thread_2);
+            t1.Start();
+            t2.Start();
+
+            Task.WaitAll(t1, t2);
+
+            Console.WriteLine(number);
+        }
+    }
+
+```
+
+> 실행 결과
+
+![레이스 컨디션](https://user-images.githubusercontent.com/67315288/126055425-e824c367-140f-47a2-b606-b2c5409d39e0.png)
+
+기존의 싱글쓰레드 환경이었다면 0이 나와야 하지만 이상한 값이 나오게 된다.
+
+이 실행 코드를 디스어셈블리 해보면
+
+![레이스 컨디션 디스 어셈블리](https://user-images.githubusercontent.com/67315288/126055536-ee852291-b87f-4fc0-8319-0cece6541247.png)
+
+이런 결과가 나온다.
+
+> mov 7FFDB3BD 값을 ecx로 옮기고  
+> inc ecx ecx값을 1 증가 시킨다음  
+> mov 다시 그 값을 7FFDB3BD로 옮긴다.
+
+즉, 개발자는 1줄의 코드를 작성했지만 실제 기계어 동작에서는 3단계로 나눠서 실행하게 된다. 기계어에서는 동작을 왜 3단계로 나누는지 이상하게 생각할 수 있지만 값을 더한다는 동작 자체가 위와 같이 3단계로 진행 해야되는 애당초 더이상 쪼갤수없는 원자성의 최소 단위 동작이기 때문이다.
+
+```C#
+// 기계어를 의사코드로 표현한 동작.
+static void Thread_1()
+        {
+            // atomic = 원자성
+
+            for (int i = 0; i < 100000; i++)
+            {
+                int temp = number; // 0
+                temp += 1; // 1
+                number = temp; // number = 1
+            }
+        }
+        static void Thread_2()
+        {
+            for (int i = 0; i < 100000; i++)
+            {
+                int temp = number; // 0
+                temp -= 1; // -1
+                number = temp; // number = -1
+            }
+        }
+```
+
+그리하여 위와 같이 동작을 하게될때 참조하는 number의 값이 순서대로 동작한다면 상관이 없지만 연산을 하기전에 참조하였던 값과 연산을 하고나서의 참조값이 같다는 보장을 할 수 없기 때문에 race condition을 겪게 되는것이다.
+
+```C#
+   static void Thread_1()
+        {
+            // atomic = 원자성
+            for (int i = 0; i < 100000; i++)
+            {
+                Interlocked.Increment(ref number);
+            }
+        }
+        static void Thread_2()
+        {
+            for (int i = 0; i < 100000; i++)
+            {
+                Interlocked.Decrement(ref number);
+            }
+        }
+
+```
+
+위처럼 Interlocked를 사용하면 공유 데이터를 어떤 한 쓰레드에서 연산할때 동안 다른 쓰레드에서는 연산을 하지않게된다.  
+그리고 ref 키워드를 사용하면 어느 시점의 값을 가져와서 증가 시키는 것이 아닌 직접 주소의 참조값에 접근하여 어떤 값이 있는진 모르지만 1 증가시킨다라는 연산을 하게된다.
