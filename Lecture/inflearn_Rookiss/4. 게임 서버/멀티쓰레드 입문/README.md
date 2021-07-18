@@ -467,10 +467,14 @@ static void Thread_1()
 
 ```
 
+---
+
 lock에는 몇 가지 구현 방법이 존재한다.  
 구현 방법에 대해 알아보자
 
-### 1. SpinLock
+### 1. 무조건 대기 시키는 방법
+
+SpinLock
 
 락이 풀릴때까지 계속 기다리며 접근하는 방법이다.
 
@@ -551,7 +555,9 @@ lock에는 몇 가지 구현 방법이 존재한다.
 
 CPU 차원에서 메모리 락을 걸어 한 쓰레드만 접근해서 메모리 조작을 할 수 있게 막아버리기 때문에 데드락 현상이 발생하지 않게 된다.
 
-### 2. Context Swiching
+---
+
+### 2. 양보하는 방법
 
 ```C#
     class SpinLock
@@ -591,9 +597,117 @@ CPU 차원에서 메모리 락을 걸어 한 쓰레드만 접근해서 메모리
 
 기본 동작은 기존 스핀락에서 대기하는 부분만 추가되었다.
 
-Context swiching은 lock이 걸려있으면 일단 대기 후 ( 다른 쓰레드에게 양보 ) 일정 시간후에 다시 접근하여 lock이 풀려있으면 실행을 하게된다.
+lock이 걸려있으면 일단 대기 후 ( 다른 쓰레드에게 양보 ) 일정 시간후에 다시 접근하여 lock이 풀려있으면 실행을 하게된다.
 
 단점은 lock이 걸려있을때 일정 시간 대기 후 다시 돌아와 접근해도 lock이 풀려있다는 보장이 없기 때문에 기아 현상이 발생 할 수 도 있다.  
 그리고 대기를 하기위해 Context Switching 한다는 것 자체가 현재의 Task를 저장하고 다음 진행할 Task의 상태 값을 읽어 적용하는 과정인데 결국 이러한 과정이 계속 발생하면 부하가 크다.
 
 경우에 따라서는 운영 체제의 유저 모드에서 머무르며 계속해서 접근하는 스핀락 기법이 더 도움된다.
+
+---
+
+### 3-1 커널단계에 lock이 풀림을 알려주는 요청을 하는 방법 / AutoResetEvent & Manualresetevent
+
+```C#
+ class Lock
+    {
+        // bool <= 커널에서 관리하는 변수
+        AutoResetEvent _available = new AutoResetEvent(true);
+
+        public void Acquire()
+        {
+            _available.WaitOne(); // 입장 시도 // 자동으로 Reset 해줌
+            //_available.Reset(); // bool = false
+        }
+        public void Release()
+        {
+            _available.Set(); // flag = true
+        }
+    }
+
+    class Program
+    {
+        static int _num = 0;
+        static Lock _lock = new Lock();
+        static void Thread_1()
+        {
+            for(int i=0; i<10000; i++)
+            {
+                _lock.Acquire();
+                _num++;
+                _lock.Release();
+            }
+        }
+
+        static void Thread_2()
+        {
+            for (int i = 0; i < 10000; i++)
+            {
+                _lock.Acquire();
+                _num--;
+                _lock.Release();
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            Task t1 = new Task(Thread_1);
+            Task t2 = new Task(Thread_2);
+            t1.Start();
+            t2.Start();
+
+            Task.WaitAll(t1, t2);
+
+            Console.WriteLine(_num);
+        }
+    }
+```
+
+lock이 걸려있으면 대기를 하게 되는데 lock이 풀리는 순간을 커널 단계에 요청을 하게된다.  
+그리고 대기중이던 쓰레드가 접근하여 lock을 다시 걸고 동작을 수행하게 된다.  
+이 또한 Context Switching이 일어나게 되므로 매우 느린 동작을 한다.
+
+### 3-2 커널단계에 lock이 풀림을 알려주는 요청을 하는 방법 / Mutex
+
+```C#
+  class Program
+    {
+        static int _num = 0;
+        static Mutex _lock = new Mutex();
+        static void Thread_1()
+        {
+            for(int i=0; i<10000; i++)
+            {
+                _lock.WaitOne();
+                _num++;
+                _lock.ReleaseMutex();
+            }
+        }
+
+        static void Thread_2()
+        {
+            for (int i = 0; i < 10000; i++)
+            {
+                _lock.WaitOne();
+                _num--;
+                _lock.ReleaseMutex();
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            Task t1 = new Task(Thread_1);
+            Task t2 = new Task(Thread_2);
+            t1.Start();
+            t2.Start();
+
+            Task.WaitAll(t1, t2);
+
+            Console.WriteLine(_num);
+        }
+    }
+
+```
+
+커널 단계에 요청을 해서 lock을 구현하는 방법으로는 또 Mutex도 있다.
+Mutex 클래스는 해당 머신의 프로세스간에서 조차도 배타적 locking을 하는데 사용한다 때문에 엄청나게 느리다.
