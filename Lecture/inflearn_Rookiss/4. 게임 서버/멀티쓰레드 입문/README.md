@@ -376,3 +376,172 @@ static void Thread_1()
 
 위처럼 Interlocked를 사용하면 공유 데이터를 어떤 한 쓰레드에서 연산할때 동안 다른 쓰레드에서는 연산을 하지않게된다.  
 그리고 ref 키워드를 사용하면 어느 시점의 값을 가져와서 증가 시키는 것이 아닌 직접 주소의 참조값에 접근하여 어떤 값이 있는진 모르지만 1 증가시킨다라는 연산을 하게된다.
+
+## 데드락
+
+교착 상태라고도 하며 공유 자원을 동시에 여러 곳에서 사용하려고 할 때 발생할 수 있다.
+
+여러가지 상황이 있는데, 개발자의 설계 실수로 lock을 걸고 안풀어주는 경우도 있고, lock의 순서를 서로 다른 쓰레드가 반대로 접근해 서로 다음 연산을 못하는 경우도 있고, 동시에 락을 걸어서 빠져나가지 못하는 경우도 있다.
+
+```C#
+// 데드락 예제
+
+ class SessionManager
+    {
+        static object _lock = new object();
+
+        public static void TestSession()
+        {
+            lock (_lock)
+            {
+
+            }
+        }
+
+        public static void Test()
+        {
+            lock (_lock)
+            {
+               UserManager.TestUser();
+            }
+        }
+
+    }
+    class UserManager
+    {
+        static object _lock = new object();
+
+        public static void Test()
+        {
+            lock (_lock)
+            {
+                SessionManager.TestSession();
+            }
+        }
+
+        public static void TestUser()
+        {
+            lock (_lock)
+            {
+
+            }
+        }
+    }
+    class Program
+    {
+        static int number = 0;
+        static object _obj = new object();
+
+        static void Thread_1()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                SessionManager.Test();
+            }
+        }
+
+        // 데드락 DeadLock
+
+        static void Thread_2()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                UserManager.Test();
+            }
+        }
+        static void Main(string[] args)
+        {
+            Task t1 = new Task(Thread_1);
+            Task t2 = new Task(Thread_2);
+            t1.Start();
+
+            Thread.Sleep(1000);
+
+            t2.Start();
+
+            Task.WaitAll(t1, t2);
+
+            Console.WriteLine(number);
+        }
+    }
+
+```
+
+데드락의 몇가지의 해결방법이 있다.
+
+### 1. SpinLock
+
+락이 풀릴때까지 계속 기다리며 접근하는 방법이다.
+
+```C#
+ class SpinLock
+    {
+         volatile int _locked = 0;
+
+        public void Acquire()
+        {
+            while (true)
+            {
+                // version 1
+                //int original = Interlocked.Exchange(ref _locked, 1);
+                //if (original == 0)
+                //    break;
+
+                // version 2
+                // CAS Compare-And-Swap
+                int expected = 0;
+                int desired = 1;
+                if(Interlocked.CompareExchange(ref _locked, desired, expected)==expected)
+                    break;
+            }
+        }
+
+        public void Release()
+        {
+            _locked = 0;
+        }
+    }
+
+    class Program
+    {
+        static int _num = 0;
+        static SpinLock _lock = new SpinLock();
+
+        static void Thread_1()
+        {
+            for(int i=0; i<100000; i++)
+            {
+                _lock.Acquire();
+                _num++;
+                _lock.Release();
+
+            }
+        }
+
+        static void Thread_2()
+        {
+            for (int i = 0; i < 100000; i++)
+            {
+                _lock.Acquire();
+                _num--;
+                _lock.Release();
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            Task t1 = new Task(Thread_1);
+            Task t2 = new Task(Thread_2);
+            t1.Start();
+            t2.Start();
+
+            Task.WaitAll(t1, t2);
+
+            Console.WriteLine(_num);
+        }
+    }
+```
+
+interlock.CompareExchange 함수를 사용해 비교를 하고 값을 변경한다
+
+CPU 차원에서 메모리 락을 걸어 한 쓰레드만 접근해서 메모리 조작을 할 수 있게 막아버리기 때문에 데드락 현상이 발생하지 않게 된다.
