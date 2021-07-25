@@ -799,3 +799,49 @@ Mutex 클래스는 해당 머신의 프로세스간에서 조차도 배타적 lo
     }
 
 ```
+
+## Thread Local Storage
+
+TLS(Thread Local Storage)는 스레드 별로 고유한 저장공간을 가질 수 있는 방법이다.
+
+각각의 스레드는 고유한 스택을 갖기 때문에 스택 변수(지역 변수)는 스레드 별로 고유하다.  
+예를 들어 각각의 스레드가 같은 함수를 실행한다고 해도 그 함수에서 정의된 지역 변수는 실제로 서로 다른 메모리 공간에 위치한다는 의미이다.  
+그러나 정적 변수와 전역 변수의 경우에는 프로세스 내의 모든 스레드에 의해서 공유되는데
+
+이때 TLS는 정적, 전역 변수를 각각의 스레드에게 독립적으로 만들어 주고 싶을 때 사용하는 것이다.
+
+```C#
+    class Program
+    {
+        static ThreadLocal<string> ThreadName = new ThreadLocal<string>(() => { return $"My Name is {Thread.CurrentThread.ManagedThreadId}"; });
+
+        static void WhoAmI()
+        {
+            bool repeat = ThreadName.IsValueCreated;
+            if(repeat)
+            Console.WriteLine(ThreadName.Value + "(repeat)");
+            else
+            Console.WriteLine(ThreadName.Value);
+        }
+        static void Main(string[] args)
+        {
+            Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
+
+            ThreadName.Dispose();
+        }
+    }
+
+/*실행 결과
+My Name is 6
+My Name is 7
+My Name is 1
+My Name is 4
+My Name is 4 (repeat)
+My Name is 6 (repeat)
+My Name is 7 (repeat)
+My Name is 5
+*/
+
+```
+
+위와 같이 전역변수를 쓰레드 고유의 아이디 처럼 사용 할 수 있게 한다.
